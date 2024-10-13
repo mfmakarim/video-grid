@@ -71,6 +71,27 @@ const VideoGrid: React.FC = () => {
 
   const groupedVideos = groupVideosByDate(videos);
 
+  function getYouTubeThumbnail(url:string) {
+    // Function to extract the YouTube video ID
+    function extractVideoID(url:string) {
+        const regExp = /^.*((youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)|(\?v=))([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[4].length === 11) ? match[4] : null;
+    }
+
+    // Get video ID
+    const videoID = extractVideoID(url);
+
+    if (videoID) {
+        // Construct the thumbnail URL
+        const thumbnailUrl = `https://img.youtube.com/vi/${videoID}/hqdefault.jpg`;
+        return thumbnailUrl;
+    } else {
+        return 'Invalid YouTube URL';
+    }
+}
+  
+
   return (
     <div className="container mx-auto px-4 py-8">
       {Object.entries(groupedVideos).map(([date, dateVideos]) => (
@@ -86,7 +107,7 @@ const VideoGrid: React.FC = () => {
                 className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105"
               >
                 <img
-                  src={video.thumbnail || `https://img.youtube.com/vi/${video.url.split('v=')[1]}/0.jpg`}
+                  src={video.thumbnail || getYouTubeThumbnail(video.url)}
                   alt={video.name}
                   className="w-full h-40 object-cover"
                 />
